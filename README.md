@@ -178,7 +178,7 @@ Two factors stack.
 
 ## credits
 
-Original microGPT integration, FPGA reference benchmark, the C+NEON ceiling, and the entire aesthetic of this benchmark are [Alex Cheema](https://github.com/AlexCheema)'s work — see [AlexCheema/talos-vs-macbook](https://github.com/AlexCheema/talos-vs-macbook). This fork ([CG-8663/talos-vs-macbook](https://github.com/CG-8663/talos-vs-macbook)) extends the comparison with NVIDIA DGX Spark (Grace + Blackwell), M3 Ultra, and M1 Max columns, plus two CUDA paths (`bench_cuda.cu` naïve launch-per-op and `bench_cuda_persistent.cu` fused on-device). Upstream PR: [AlexCheema#2](https://github.com/AlexCheema/talos-vs-macbook/pull/2). Maintained by [Chronara](https://chronara.io).
+Original microGPT integration, FPGA reference benchmark, the C+NEON ceiling, and the entire aesthetic of this benchmark are [Alex Cheema](https://github.com/AlexCheema)'s work — see [AlexCheema/talos-vs-macbook](https://github.com/AlexCheema/talos-vs-macbook). This repo ([CG-8663/talos-vs-macbook-vs-gx10](https://github.com/CG-8663/talos-vs-macbook-vs-gx10)) extends the comparison with NVIDIA DGX Spark (Grace + Blackwell), M3 Ultra, and M1 Max columns, plus two CUDA paths (`bench_cuda.cu` naïve launch-per-op and `bench_cuda_persistent.cu` fused on-device). Upstream PR: [AlexCheema#2](https://github.com/AlexCheema/talos-vs-macbook/pull/2). Maintained by [Chronara](https://chronara.io).
 
 ## license
 
