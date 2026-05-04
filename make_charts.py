@@ -53,6 +53,11 @@ RESULTS = [
     ("FPGA · TALOS-V2",                 53_000,    2.0),
 ]
 
+# Fork README focuses on the interesting tier — top 10 by tok/sec.
+# (Upstream PR carries all 25 rows; the lower band is mostly numpy / mlx /
+# pure-python noise that doesn't change the conclusion.)
+RESULTS = sorted(RESULTS, key=lambda r: r[1], reverse=True)[:10]
+
 OUT = "charts"
 os.makedirs(OUT, exist_ok=True)
 
@@ -81,7 +86,7 @@ def horizontal_bars(values, title, xlabel, fname, caption=None):
     vals = [values[i] for i in order]
     cols = [colors[i] for i in order]
 
-    fig, ax = plt.subplots(figsize=(10, 10.5), dpi=140)
+    fig, ax = plt.subplots(figsize=(10, 5.5), dpi=140)
     bars = ax.barh(labels, vals, color=cols, edgecolor="none")
     ax.set_xlabel(xlabel)
     ax.set_title(title, loc="left", fontsize=12, pad=12)

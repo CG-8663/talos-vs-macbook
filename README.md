@@ -27,22 +27,9 @@ M1 Max · c fp32+NEON               2,910,293       54.91x
 M1 Max · c Q4.12                   2,345,483       44.25x
 Blackwell · cuda persistent          413,603        7.80x
 TALOS-V2 (FPGA, 56MHz)                53,000        1.00x
-Grace · numpy fp32                    41,032        0.77x
-M4 Max · numpy fp32                   40,244        0.76x
-M3 Ultra · numpy fp32                 38,175        0.72x
-M1 Max · numpy fp32                   28,866        0.54x
-Blackwell · cuda fp32 (naive)         19,127        0.36x
-M4 Max · mlx fp32 (cpu)                9,350        0.18x
-M1 Max · mlx fp32 (cpu)                9,122        0.17x
-M3 Ultra · pure-python                 8,039        0.15x
-M4 Max · pure-python                   7,430        0.14x
-Grace · pure-python                    6,455        0.12x
-M3 Ultra · mlx fp32 (cpu)              5,407        0.10x
-M1 Max · pure-python                   4,600        0.09x
-M4 Max · mlx fp32 (gpu)                3,337        0.06x   <- much slower
-M1 Max · mlx fp32 (gpu)                2,196        0.04x
-M3 Ultra · mlx fp32 (gpu)              1,785        0.03x
 ```
+
+(top-10 by tok/sec; the numpy / MLX / pure-python tier is in the [upstream PR](https://github.com/AlexCheema/talos-vs-macbook/pull/2) for completeness)
 
 A single Grace core (Cortex-X925 at 3.9 GHz boost) in well-tuned C does **~82×** the FPGA's throughput, beating M4 Max's hand-rolled NEON path by 16% on the same source. Apple silicon's c+NEON path holds the next three slots across three chip generations (~71× M4 Max, ~69× M3 Ultra, ~55× M1 Max). NumPy and MLX still come in *under* the FPGA on every CPU we tried — their per-call dispatch overhead is bigger than the actual work. MLX-on-GPU is the worst — kernel launch overhead annihilates a 4K-MAC forward pass. lol.
 
