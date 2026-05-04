@@ -1,6 +1,16 @@
 # talos-vs-macbook-vs-GX10
 
-Have you ever wanted to know whether 50,000 tokens/sec on a custom FPGA is impressive? It is and it isn't. This repo runs Karpathy's [microGPT](https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95) — a 4,192-parameter character-level transformer — in seven different ways across an M4 Max MacBook Pro, M3 Ultra and M1 Max Mac Studios, and an [NVIDIA DGX Spark](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) (GB10 superchip: a 20-core Grace ARM CPU and a Blackwell GPU), and compares all of them to [TALOS-V2](https://github.com/Luthiraa/TALOS-V2)'s 53,000 tok/sec hardware implementation on a Cyclone V FPGA.
+> Chronara fork of [AlexCheema/talos-vs-macbook](https://github.com/AlexCheema/talos-vs-macbook), extended with NVIDIA DGX Spark (GB10: Grace + Blackwell), M3 Ultra, and M1 Max columns. Upstream PR open at [AlexCheema#2](https://github.com/AlexCheema/talos-vs-macbook/pull/2).
+
+A single Grace ARM core (Cortex-X925 @ 3.9 GHz boost) on an [NVIDIA DGX Spark](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) hits **4,364,405 tok/sec** running Karpathy's [microGPT](https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95) — a 4,192-parameter character-level transformer — through a hand-rolled C+NEON forward pass. **That's 16% faster than M4 Max** ([Alex Cheema's original benchmark](https://github.com/AlexCheema/talos-vs-macbook): 3,756,165 tok/sec) on the *same source file*. ARMv9's wider NEON pipes beat Apple silicon's higher clock at this scale.
+
+This fork runs Karpathy's microGPT in seven different ways across:
+
+- **NVIDIA DGX Spark (GB10 superchip)** — 20-core Grace ARM CPU (Cortex-X925/A725) plus a Blackwell GPU, sharing 128 GB of unified memory. Runs the existing C path on Grace (no Apple-specific code needed) and two new CUDA paths on Blackwell.
+- **M4 Max MacBook Pro** — Alex's anchor.
+- **M3 Ultra Mac Studio** (Mac15,14, 20P+8E, 96 GB).
+- **M1 Max Mac Studio** (Mac13,1).
+- compared against [TALOS-V2](https://github.com/Luthiraa/TALOS-V2)'s 53,000 tok/sec hardware implementation on a Cyclone V FPGA — Alex's reference.
 
 The model is so small (~17 KB at fp32) that it fits in L1 cache and the whole forward pass is ~4,000 multiply-accumulates per token. That makes the benchmark less about arithmetic and more about *overhead*. The interesting question turns out to be: which implementations even *beat* the FPGA?
 
@@ -178,6 +188,10 @@ Two factors stack.
 - [Arm Cortex-X925](https://www.arm.com/products/silicon-ip-cpu/cortex-x/cortex-x925) — the ARMv9 performance core inside Grace; the wider NEON pipeline is what beats M4 Max single-thread on the C+NEON path.
 - [Persistent threads / persistent blocks](https://research.nvidia.com/publication/2012-06_understanding-efficiency-ray-traversal-gpus-kepler-and-fermi-addendum) — the GPU-side pattern that `bench_cuda_persistent.cu` uses. Aila & Laine, NVIDIA Research, 2012. Originally for ray traversal but the principle is the same: keep the same kernel resident, feed it work, never relaunch.
 - [glibc libmvec](https://sourceware.org/glibc/wiki/libmvec) — auto-vectorized math (`_ZGVnN4v_expf` for AArch64 NEON) that gcc's `-O3 -ffast-math` emits in the attention softmax. Required at link time on Linux: `-lm -lmvec`.
+
+## credits
+
+Original microGPT integration, FPGA reference benchmark, the C+NEON ceiling, and the entire aesthetic of this benchmark are [Alex Cheema](https://github.com/AlexCheema)'s work — see [AlexCheema/talos-vs-macbook](https://github.com/AlexCheema/talos-vs-macbook). This fork ([CG-8663/talos-vs-macbook](https://github.com/CG-8663/talos-vs-macbook)) extends the comparison with NVIDIA DGX Spark (Grace + Blackwell), M3 Ultra, and M1 Max columns, plus two CUDA paths (`bench_cuda.cu` naïve launch-per-op and `bench_cuda_persistent.cu` fused on-device). Upstream PR: [AlexCheema#2](https://github.com/AlexCheema/talos-vs-macbook/pull/2). Maintained by [Chronara](https://chronara.io).
 
 ## license
 
